@@ -140,10 +140,12 @@ WORKDIR /home/$DOCKER_USER
 # zshrc
 # vim, nvim, powerline, ycm for different languages?
 # fasd
-# tmux, tmux config, plugins
-# git
+# tmux, tmux config, plugins, scripts
+# git config
 # powerline?
 # setup ycm for different languages?
-# python, conda
+# python, virtualenv?
+# tldr
+# volumes
 
 CMD [ "zsh" ]
