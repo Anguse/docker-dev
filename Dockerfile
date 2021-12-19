@@ -21,8 +21,21 @@ RUN adduser "$DOCKER_USER" sudo
 # your host machine or otherwise.
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+# Need to be root in order to set timezone
+USER root
+
+# Timezone
+ENV TZ="Europe/Stockholm"
+RUN sudo ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && sudo echo $TZ > /etc/timezone
+
 USER "$DOCKER_USER"
-#
+
+# install wget and stow
+RUN sudo apt-get install -y wget stow
+
+# install oh-my-zsh
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh)"
+
 # This will determine where we will start when we enter the container.
 WORKDIR "/home/$DOCKER_USER"
 
@@ -38,25 +51,29 @@ RUN sudo apt-get install -y tzdata
 RUN sudo apt-get install -y build-essential curl git openssh-client man-db bash-completion software-properties-common
 
 # Now add the repository for neovim
-RUN sudo add-apt-repository ppa:neovim-ppa/stable
+RUN sudo add-apt-repository ppa:neovim-ppa/unstable
 
-# Update the package listing
+# Install fuse for neovim appimage
 RUN sudo apt-get update
 
 # Install the real deal
 RUN sudo apt-get install neovim -y
 
-# Create configuration directory for neovim
-RUN mkdir -p "$HOME/.config/nvim"
-
-# Copy our configuration
-COPY ./init.vim /tmp/init.vim
-RUN cat /tmp/init.vim > ~/.config/nvim/init.vim && \
-	sudo rm /tmp/init.vim
-
 # Install vim-plug, our plugin manager
 RUN curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+# Stow is used to create symlinks to the different config files
+ENV STOW_FOLDERS = "ranger, zsh, nvim, tmux, bin, git"
+
+# Remove default .zshrc
+RUN rm /home/$DOCKER_USER/.zshrc
+
+# dotfiles, replace with git repo when finished
+COPY --chown=$DOCKER_USER dotfiles/ /home/$DOCKER_USER/.dotfiles
+
+# Setup with stow
+RUN cd /home/$DOCKER_USER/.dotfiles && zsh install
 
 # Install all of our plugins
 RUN nvim +PlugInstall +qall
@@ -82,70 +99,31 @@ RUN sudo apt-get install -y python3-pip && \
 
 # source nvm and run the python youcompleteme installer with JS
 RUN . "$NVM_DIR/nvm.sh" && \
-    python3 "$HOME/.config/nvim/plugged/YouCompleteMe/install.py" \
-    --js-completer
+   python3 "$HOME/.config/nvim/plugged/YouCompleteMe/install.py" --js-completer
 
-RUN sudo apt-get install -y wget
+# Install tmux
+RUN sudo apt-get install -y tmux
 
-# install oh-my-zsh
-RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh)"
+## Tmux plugin manager
+RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-ENV TMUX_VERSION 2.7
-
-ENV TMUX_TAR "tmux-$TMUX_VERSION.tar.gz"
-
-# Download the tmux archive
-RUN curl -L -o "/tmp/tmux-$TMUX_VERSION.tar.gz" \
-		"https://github.com/tmux/tmux/releases/download/$TMUX_VERSION/$TMUX_TAR"
-#
-# Change our working directory to the location where our archive is
-WORKDIR /tmp
-
-# Untar the tmux source code
-RUN tar xzf "$TMUX_TAR" -C /tmp
-
-# Switch to the directory containing the extracted source code.
-WORKDIR "/tmp/tmux-$TMUX_VERSION"
-
-# Since we're building source code, we will require certain libraries to
-# compiler against (header files) as well as library files which will be
-# linked to the tmux program at runtime.
-RUN sudo apt-get install -y libevent-2.1-7 libevent-dev libncurses-dev
-
-# Generate configuration files and make sure all dependencies are present
-RUN ./configure
-
-# Build the tmux binary
-RUN make
-
-# Install tmux globally
-RUN sudo make install
-
-# Tmux requires the TERM environment variable to be set to this specific value
-# to run as one would expect.
+## Tmux requires the TERM environment variable to be set to this specific value
+## to run as one would expect.
 ENV TERM=screen-256color
 
-# Copy our basic tmux configuration
-COPY ./.tmux.conf /tmp/.tmux.conf
-RUN cat /tmp/.tmux.conf > ~/.tmux.conf && \
-	sudo rm /tmp/.tmux.conf
+# cht.sh
+RUN curl https://cht.sh/:cht.sh | sudo tee /usr/local/bin/cht.sh && sudo chmod +x /usr/local/bin/cht.sh
 
-# ranger, fasd
-RUN sudo apt-get install -y ranger
+## ranger, fasd
+RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils
 
-# Switch back to our normal directory
+## Switch back to our normal directory
 WORKDIR /home/$DOCKER_USER
 
-# install fasd
-# zshrc
-# vim, nvim, powerline, ycm for different languages?
-# fasd
-# tmux, tmux config, plugins, scripts
-# git config
-# powerline?
-# setup ycm for different languages?
-# python, virtualenv?
-# tldr
-# volumes
+## git config
+## powerline in tmux
+## setup ycm for different languages?
+## python, virtualenv?
+## mounting volumes
 
 CMD [ "zsh" ]

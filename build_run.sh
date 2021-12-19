@@ -2,5 +2,5 @@
 
 docker run --privileged -it --rm \
 	        -v `readlink -f /var/run/docker.sock`:/var/run/docker.sock \
-            dev-workspace \
-            tmux new
+            docker-dev \
+            tmux -u new
