@@ -53,7 +53,7 @@ RUN sudo apt-get install -y build-essential curl git openssh-client man-db bash-
 # Now add the repository for neovim
 RUN sudo add-apt-repository ppa:neovim-ppa/unstable
 
-# Install fuse for neovim appimage
+# Update registry
 RUN sudo apt-get update
 
 # Install the real deal
@@ -106,6 +106,9 @@ RUN sudo apt-get install -y tmux
 
 ## Tmux plugin manager
 RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+# Install tmux plugins
+RUN /home/$DOCKER_USER/.tmux/plugins/tpm/scripts/install_plugins.sh
 
 ## Tmux requires the TERM environment variable to be set to this specific value
 ## to run as one would expect.
