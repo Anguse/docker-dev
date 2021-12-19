@@ -1,13 +1,12 @@
-# docker run --privileged -it --rm \
-	        # -v `readlink -f /var/run/docker.sock`:/var/run/docker.sock \
-            # dev-workspace \
-            # tmux new
+all: base-dev
+no-cache: base-dev/nocache
 
-all: bin/example
-test: lint unit-test
-
-PLATFORM=linux
-
-.PHONY: bin/example
-bin/example:
+.PHONY: base-dev
+base-dev:
+	@git submodule update --recursive
 	@docker build . -t base-dev
+
+.PHONY: base-dev/nocache
+base-dev/nocache:
+	@git submodule update --recursive
+	@docker build --no-cache . -t base-dev
