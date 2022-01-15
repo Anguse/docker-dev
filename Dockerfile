@@ -117,16 +117,22 @@ ENV TERM=screen-256color
 # cht.sh
 RUN curl https://cht.sh/:cht.sh | sudo tee /usr/local/bin/cht.sh && sudo chmod +x /usr/local/bin/cht.sh
 
-## ranger, fasd
-RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils
+# fasd repo cause its FASD
+RUN sudo add-apt-repository ppa:aacebedo/fasd
+
+# Get up to speed
+RUN sudo apt-get update
+
+## ranger, fasd, ripgrep
+RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils virtualenv ripgrep
 
 ## Switch back to our normal directory
 WORKDIR /home/$DOCKER_USER
 
 ## git config
-## powerline in tmux
 ## setup ycm for different languages?
 ## python, virtualenv?
-## mounting volumes
+## ripgrep
+## fdfind
 
 CMD [ "zsh" ]
