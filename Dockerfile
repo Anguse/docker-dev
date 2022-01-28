@@ -132,6 +132,9 @@ WORKDIR /home/$DOCKER_USER
 ## Get docker
 RUN curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
 
+# Make docker runnable without sudo
+RUN sudo groupadd docker && sudo usermod -aG docker "$DOCKER_USER"
+
 ## git config
 ## setup ycm for different languages?
 ## python, virtualenv?
