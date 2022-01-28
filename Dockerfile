@@ -130,7 +130,7 @@ RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils virtua
 WORKDIR /home/$DOCKER_USER
 
 ## Get docker
-curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
+RUN curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
 
 ## git config
 ## setup ycm for different languages?
