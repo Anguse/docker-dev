@@ -124,7 +124,7 @@ RUN sudo add-apt-repository ppa:aacebedo/fasd
 RUN sudo apt-get update
 
 ## ranger, fasd, ripgrep
-RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils virtualenv ripgrep
+RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils virtualenv ripgrep xclip
 
 ## Switch back to our normal directory
 WORKDIR /home/$DOCKER_USER
