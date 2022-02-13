@@ -69,6 +69,9 @@ ENV STOW_FOLDERS = "ranger, zsh, nvim, tmux, bin, git"
 # Remove default .zshrc
 RUN rm /home/$DOCKER_USER/.zshrc
 
+# add github to known hosts
+RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+
 # dotfiles
 RUN git clone git@github.com:Anguse/dotfiles.git /home/$DOCKER_USER/.dotfiles
 
