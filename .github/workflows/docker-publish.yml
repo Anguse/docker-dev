@@ -14,6 +14,13 @@ on:
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ main ]
+  repository_dispatch:
+    inputs:
+      source:
+        description: 'Source of event'
+        required: false
+        default: 'No source specified'
+
 
 env:
   # Use docker.io for Docker Hub if empty
