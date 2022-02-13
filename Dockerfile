@@ -69,8 +69,8 @@ ENV STOW_FOLDERS = "ranger, zsh, nvim, tmux, bin, git"
 # Remove default .zshrc
 RUN rm /home/$DOCKER_USER/.zshrc
 
-# dotfiles, replace with git repo when finished
-COPY --chown=$DOCKER_USER dotfiles/ /home/$DOCKER_USER/.dotfiles
+# dotfiles
+RUN git clone https://github.com/anguse/dotfiles /home/$DOCKER_USER/.dotfiles
 
 # Setup with stow
 RUN cd /home/$DOCKER_USER/.dotfiles && zsh install
