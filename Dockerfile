@@ -135,6 +135,12 @@ RUN curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
 # Make docker runnable without sudo
 RUN sudo usermod -aG docker $DOCKER_USER
 
+# Get docker-compose
+RUN sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+# Make it executable
+RUN sudo chmod +x /usr/local/bin/docker-compose
+
 ## git config
 ## setup ycm for different languages?
 ## python, virtualenv?
