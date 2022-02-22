@@ -70,7 +70,10 @@ ENV STOW_FOLDERS = "ranger, zsh, nvim, tmux, bin, git"
 RUN rm /home/$DOCKER_USER/.zshrc
 
 # dotfiles
-RUN git clone https://github.com/anguse/dotfiles /home/$DOCKER_USER/.dotfiles
+RUN git clone https://github.com/anguse/dotfiles /home/$DOCKER_USER/.dotfiles && \
+    cd /home/$DOCKER_USER/.dotfiles && \
+    git remote rm origin && \
+    git remote add origin git@github.com:Anguse/dotfiles.git
 
 # Setup with stow
 RUN cd /home/$DOCKER_USER/.dotfiles && zsh install
