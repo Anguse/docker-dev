@@ -144,10 +144,12 @@ RUN sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/doc
 # Make it executable
 RUN sudo chmod +x /usr/local/bin/docker-compose
 
+# Azure, perhaps I should branch of?
+RUN sudo apt-get install -y azure-cli
+
 ## git config
 ## setup ycm for different languages?
 ## python, virtualenv?
-## ripgrep
 ## fdfind
 
 CMD [ "zsh" ]
