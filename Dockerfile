@@ -129,6 +129,9 @@ RUN sudo apt-get update
 ## ranger, fasd, ripgrep...
 RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils virtualenv ripgrep xclip net-tools fping dnsutils nmap
 
+## Ruby
+RUN sudo apt-get install -y ruby-dev
+
 ## Switch back to our normal directory
 WORKDIR /home/$DOCKER_USER
 
