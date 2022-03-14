@@ -34,7 +34,7 @@ USER "$DOCKER_USER"
 RUN sudo apt-get install -y wget stow
 
 # install oh-my-zsh
-RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh)"
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.2/zsh-in-docker.sh)"
 
 # This will determine where we will start when we enter the container.
 WORKDIR "/home/$DOCKER_USER"
