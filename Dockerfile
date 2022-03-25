@@ -161,6 +161,9 @@ RUN sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com
 # Install terraform and packer
 RUN sudo apt-get update -y && sudo apt-get install terraform packer
 
+# Install jq for json parsing
+Run sudo apt-get install -y jq
+
 ## git config
 ## setup ycm for different languages?
 ## python, virtualenv?
