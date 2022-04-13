@@ -131,7 +131,7 @@ RUN sudo add-apt-repository ppa:aacebedo/fasd
 RUN sudo apt-get update
 
 ## ranger, fasd, ripgrep...
-RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils virtualenv ripgrep xclip net-tools fping dnsutils nmap direnv
+RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils virtualenv ripgrep xclip net-tools fping dnsutils nmap direnv rust-fd-find
 
 ## Ruby
 RUN sudo apt-get install -y ruby-dev
