@@ -52,7 +52,7 @@ RUN sudo apt-get install -y tzdata
 # in all my various projects that I include it in my base image; there are
 # often transitive dependencies in Python/NodeJs/Rust projects which require
 # c/c++ compilation.
-RUN sudo apt-get install -y build-essential curl git openssh-client man-db bash-completion software-properties-common
+RUN sudo apt-get install -y build-essential curl git openssh-client man-db software-properties-common
 
 # Now add the repository for neovim
 RUN sudo add-apt-repository ppa:neovim-ppa/unstable
