@@ -48,10 +48,7 @@ RUN touch ~/.sudo_as_admin_successful
 
 RUN sudo apt-get install -y tzdata
 
-# We will need this to build c/c++ dependencies. This is common enough
-# in all my various projects that I include it in my base image; there are
-# often transitive dependencies in Python/NodeJs/Rust projects which require
-# c/c++ compilation.
+# Commons
 RUN sudo apt-get install -y build-essential curl git openssh-client man-db software-properties-common bash-completion
 
 # Now add the repository for neovim
@@ -63,7 +60,7 @@ RUN sudo apt-get update
 # Install the real deal
 RUN sudo apt-get install neovim -y
 
-# Install packer.nvim 
+# Install packer.nvim, a neovim package manager
 RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim \
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
@@ -74,10 +71,6 @@ RUN sudo apt-get install -y cmake
 RUN sudo apt-get install -y python3-pip && \
 	sudo pip3 install --upgrade pip && \
 	sudo pip3 install neovim
-
-# source nvm and run the python youcompleteme installer with JS
-# RUN . "$NVM_DIR/nvm.sh" && \
-#    python3 "$HOME/.config/nvim/plugged/YouCompleteMe/install.py" --js-completer
 
 # Install tmux
 RUN sudo apt-get install -y tmux
@@ -143,9 +136,12 @@ RUN . "$NVM_DIR/nvm.sh" && \
 	nvm install --lts && \
 	nvm alias default stable
 
-# dotfiles, change to use ssh url to be able to push changes from within
-# the container.
+# add dotfiles repo here to detect changes to head, I do this to prevent using
+# cached layers when there is a change to the repo.
 ADD https://api.github.com/repos/anguse/dotfiles/git/refs/heads/nvim-lsp version.json
+
+# clone and change to use ssh url to be able to push changes from within
+# the container.
 RUN git clone https://github.com/anguse/dotfiles --branch nvim-lsp /home/$DOCKER_USER/.dotfiles && \
     cd /home/$DOCKER_USER/.dotfiles && \
     git remote rm origin && \
