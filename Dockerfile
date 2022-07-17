@@ -132,10 +132,6 @@ RUN sudo apt-get update -y && sudo apt-get install terraform packer
 # Install jq for json parsing
 RUN sudo apt-get install -y jq
 
-# Install npm for nvim-plugins
-# RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && \
-#     sudo apt-get install -y nodejs
-
 # get the nvm install script and run it
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh | bash
 
@@ -150,10 +146,10 @@ RUN . "$NVM_DIR/nvm.sh" && \
 # dotfiles, change to use ssh url to be able to push changes from within
 # the container.
 ADD https://api.github.com/repos/anguse/dotfiles/git/refs/heads/nvim-lsp version.json
-RUN git clone https://github.com/anguse/dotfiles --branch nvim-lsp /home/$DOCKER_USER/.dotfiles
-    # cd /home/$DOCKER_USER/.dotfiles && \
-    # git remote rm origin && \
-    # git remote add origin git@github.com:Anguse/dotfiles.git
+RUN git clone https://github.com/anguse/dotfiles --branch nvim-lsp /home/$DOCKER_USER/.dotfiles && \
+    cd /home/$DOCKER_USER/.dotfiles && \
+    git remote rm origin && \
+    git remote add origin git@github.com:Anguse/dotfiles.git
 
 # Stow is used to create symlinks to the different config files
 ENV STOW_FOLDERS = "ranger, zsh, nvim, tmux, bin, git"
