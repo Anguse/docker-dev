@@ -63,9 +63,9 @@ RUN sudo apt-get update
 # Install the real deal
 RUN sudo apt-get install neovim -y
 
-# Install vim-plug, our plugin manager
-RUN curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+# Install packer.nvim 
+RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim \
+ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
 # Stow is used to create symlinks to the different config files
 ENV STOW_FOLDERS = "ranger, zsh, nvim, tmux, bin, git"
@@ -74,7 +74,7 @@ ENV STOW_FOLDERS = "ranger, zsh, nvim, tmux, bin, git"
 RUN rm /home/$DOCKER_USER/.zshrc
 
 # dotfiles
-RUN git clone https://github.com/anguse/dotfiles /home/$DOCKER_USER/.dotfiles && \
+RUN git clone https://github.com/anguse/dotfiles --branch nvim-lsp /home/$DOCKER_USER/.dotfiles && \
     cd /home/$DOCKER_USER/.dotfiles && \
     git remote rm origin && \
     git remote add origin git@github.com:Anguse/dotfiles.git
@@ -82,8 +82,8 @@ RUN git clone https://github.com/anguse/dotfiles /home/$DOCKER_USER/.dotfiles &&
 # Setup with stow
 RUN cd /home/$DOCKER_USER/.dotfiles && zsh install
 
-# Install all of our plugins
-RUN nvim +PlugInstall +qall
+# Install all plugins
+RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c "lua require('packer').sync()"
 
 # get the nvm install script and run it
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
@@ -105,8 +105,8 @@ RUN sudo apt-get install -y python3-pip && \
 	sudo pip3 install neovim
 
 # source nvm and run the python youcompleteme installer with JS
-RUN . "$NVM_DIR/nvm.sh" && \
-   python3 "$HOME/.config/nvim/plugged/YouCompleteMe/install.py" --js-completer
+# RUN . "$NVM_DIR/nvm.sh" && \
+#    python3 "$HOME/.config/nvim/plugged/YouCompleteMe/install.py" --js-completer
 
 # Install tmux
 RUN sudo apt-get install -y tmux
@@ -162,7 +162,7 @@ RUN sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com
 RUN sudo apt-get update -y && sudo apt-get install terraform packer
 
 # Install jq for json parsing
-Run sudo apt-get install -y jq
+RUN sudo apt-get install -y jq
 
 ## git config
 ## setup ycm for different languages?
