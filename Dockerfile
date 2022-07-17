@@ -67,37 +67,7 @@ RUN sudo apt-get install neovim -y
 RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim \
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
-# Stow is used to create symlinks to the different config files
-ENV STOW_FOLDERS = "ranger, zsh, nvim, tmux, bin, git"
-
-# Remove default .zshrc
-RUN rm /home/$DOCKER_USER/.zshrc
-
-# dotfiles, change to use ssh url to be able to push changes from within
-# the container.
-RUN git clone https://github.com/anguse/dotfiles --branch nvim-lsp /home/$DOCKER_USER/.dotfiles
-    # cd /home/$DOCKER_USER/.dotfiles && \
-    # git remote rm origin && \
-    # git remote add origin git@github.com:Anguse/dotfiles.git
-
-# Setup with stow
-RUN cd /home/$DOCKER_USER/.dotfiles && zsh install
-
-# Install all plugins
-RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c "lua require('packer').sync()"
-
-# get the nvm install script and run it
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-
-# set the environment variable
-ENV NVM_DIR /home/$DOCKER_USER/.nvm
-
-# source nvm, install the version we want, alias that version so it always loads
-RUN . "$NVM_DIR/nvm.sh" && \
-	nvm install --lts && \
-	nvm alias default stable
-
-# cmake needed for YMC
+# cmake
 RUN sudo apt-get install -y cmake
 
 # we also need python neovim, so we need to get and update pip3
@@ -114,9 +84,6 @@ RUN sudo apt-get install -y tmux
 
 ## Tmux plugin manager
 RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-# Install tmux plugins
-RUN /home/$DOCKER_USER/.tmux/plugins/tpm/scripts/install_plugins.sh
 
 ## Tmux requires the TERM environment variable to be set to this specific value
 ## to run as one would expect.
@@ -165,9 +132,44 @@ RUN sudo apt-get update -y && sudo apt-get install terraform packer
 # Install jq for json parsing
 RUN sudo apt-get install -y jq
 
-## git config
-## setup ycm for different languages?
-## python, virtualenv?
-## fdfind
+# Install npm for nvim-plugins
+# RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && \
+#     sudo apt-get install -y nodejs
+
+# get the nvm install script and run it
+RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh | bash
+
+# set the environment variable
+ENV NVM_DIR /home/$DOCKER_USER/.nvm
+
+# source nvm, install the version we want, alias that version so it always loads
+RUN . "$NVM_DIR/nvm.sh" && \
+	nvm install --lts && \
+	nvm alias default stable
+
+# dotfiles, change to use ssh url to be able to push changes from within
+# the container.
+RUN git clone https://github.com/anguse/dotfiles --branch nvim-lsp /home/$DOCKER_USER/.dotfiles
+    # cd /home/$DOCKER_USER/.dotfiles && \
+    # git remote rm origin && \
+    # git remote add origin git@github.com:Anguse/dotfiles.git
+
+# Stow is used to create symlinks to the different config files
+ENV STOW_FOLDERS = "ranger, zsh, nvim, tmux, bin, git"
+
+# Remove default .zshrc
+RUN rm /home/$DOCKER_USER/.zshrc
+
+# Setup with stow
+RUN cd /home/$DOCKER_USER/.dotfiles && zsh install
+
+# Install all plugins
+RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c "lua require('packer').sync()"
+
+# Install tmux plugins
+RUN /home/$DOCKER_USER/.tmux/plugins/tpm/scripts/install_plugins.sh
+
+# THINGS TO ADD:
+# * git config
 
 CMD [ "zsh" ]
