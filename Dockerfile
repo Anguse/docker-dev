@@ -149,6 +149,7 @@ RUN . "$NVM_DIR/nvm.sh" && \
 
 # dotfiles, change to use ssh url to be able to push changes from within
 # the container.
+ADD https://api.github.com/repos/anguse/dotfiles/git/refs/heads/nvim-lsp version.json
 RUN git clone https://github.com/anguse/dotfiles --branch nvim-lsp /home/$DOCKER_USER/.dotfiles
     # cd /home/$DOCKER_USER/.dotfiles && \
     # git remote rm origin && \
