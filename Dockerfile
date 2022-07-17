@@ -17,7 +17,8 @@ RUN adduser --disabled-password --gecos '' "$DOCKER_USER"
 RUN adduser "$DOCKER_USER" sudo
 
 # Give passwordless sudo. This is only acceptable as it is a private
-# development environment not exposed to the outside world. Do NOT do this on your host machine or otherwise. RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# development environment not exposed to the outside world. Do NOT do this on your host machine or otherwise. 
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Need to be root in order to set timezone
 USER root
