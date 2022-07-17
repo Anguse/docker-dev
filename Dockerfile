@@ -73,11 +73,12 @@ ENV STOW_FOLDERS = "ranger, zsh, nvim, tmux, bin, git"
 # Remove default .zshrc
 RUN rm /home/$DOCKER_USER/.zshrc
 
-# dotfiles
-RUN git clone https://github.com/anguse/dotfiles --branch nvim-lsp /home/$DOCKER_USER/.dotfiles && \
-    cd /home/$DOCKER_USER/.dotfiles && \
-    git remote rm origin && \
-    git remote add origin git@github.com:Anguse/dotfiles.git
+# dotfiles, change to use ssh url to be able to push changes from within
+# the container.
+RUN git clone https://github.com/anguse/dotfiles --branch nvim-lsp /home/$DOCKER_USER/.dotfiles
+    # cd /home/$DOCKER_USER/.dotfiles && \
+    # git remote rm origin && \
+    # git remote add origin git@github.com:Anguse/dotfiles.git
 
 # Setup with stow
 RUN cd /home/$DOCKER_USER/.dotfiles && zsh install
