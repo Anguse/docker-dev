@@ -95,6 +95,9 @@ RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils \
     virtualenv ripgrep xclip net-tools fping dnsutils nmap direnv fd-find \
     shellcheck
 
+# install ansible
+RUN python3 -m pip install --user ansible
+
 ## Ruby
 RUN sudo apt-get install -y ruby-dev
 
