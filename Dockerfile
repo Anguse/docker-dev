@@ -62,6 +62,9 @@ RUN wget https://github.com/mikefarah/yq/releases/download/v4.27.5/yq_linux_amd6
 # install helm
 RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && bash get_helm.sh && rm get_helm.sh
 
+# install k9s
+RUN curl -sS https://webinstall.dev/k9s | bash
+
 # Install packer.nvim, a neovim package manager
 RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim \
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim
