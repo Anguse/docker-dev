@@ -1,9 +1,6 @@
 FROM ubuntu:focal
 
-RUN apt-get -y update
-
-# Install sudo command...
-RUN apt-get -y install sudo
+RUN apt-get -y update && apt-get -y install sudo
 
 ENV DOCKER_USER raldo
 
@@ -27,10 +24,29 @@ USER root
 ENV TZ="Europe/Stockholm"
 RUN sudo ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && sudo echo $TZ > /etc/timezone
 
+# The sudo message is annoying, so skip it
+RUN touch ~/.sudo_as_admin_successful
+
 USER "$DOCKER_USER"
 
-# install wget and stow
-RUN sudo apt-get install -y wget stow
+# This will determine where we will start when we enter the container.
+WORKDIR "/home/$DOCKER_USER"
+
+RUN sudo apt-get update -y && sudo apt-get install -y software-properties-common curl
+
+COPY apt-packages.txt ./apt-packages.txt
+COPY apt-repos.txt ./apt-repos.txt
+COPY gpg-keys.txt ./gpg-keys.txt
+
+# Fetch and add gpg keys
+RUN xargs -d '\n' -a gpg-keys.txt -I {} sh -c "curl -fsSL {} | sudo apt-key add -"
+
+# Add repositories
+RUN xargs -d '\n' -a apt-repos.txt -I {} sudo add-apt-repository {}
+
+# Install apt packages
+RUN sudo apt-get update -y && \
+    xargs -d '\n' -a apt-packages.txt sudo apt-get install -y
 
 # install oh-my-zsh
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.2/zsh-in-docker.sh)" -- \
@@ -39,40 +55,23 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -p https://github.com/zsh-users/zsh-autosuggestions \
     -p https://github.com/zsh-users/zsh-completions
 
-# This will determine where we will start when we enter the container.
-WORKDIR "/home/$DOCKER_USER"
+# install yq
+RUN wget https://github.com/mikefarah/yq/releases/download/v4.27.5/yq_linux_amd64.tar.gz -O - |\
+  tar xz && sudo mv yq_linux_amd64 /usr/bin/yq
 
-# The sudo message is annoying, so skip it
-RUN touch ~/.sudo_as_admin_successful
-
-RUN sudo apt-get install -y tzdata
-
-# Commons
-RUN sudo apt-get install -y build-essential curl git openssh-client man-db software-properties-common bash-completion
-
-# Now add the repository for neovim
-RUN sudo add-apt-repository ppa:neovim-ppa/unstable
-
-# Update registry
-RUN sudo apt-get update
-
-# Install the real deal
-RUN sudo apt-get install neovim -y
+# install helm
+RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 -O - | sudo chmod 700 | sh
 
 # Install packer.nvim, a neovim package manager
 RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim \
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 
-# cmake
-RUN sudo apt-get install -y cmake
-
 # we also need python neovim, so we need to get and update pip3
-RUN sudo apt-get install -y python3-pip && \
-	sudo pip3 install --upgrade pip && \
+RUN sudo pip3 install --upgrade pip && \
 	sudo pip3 install neovim
 
-# Install tmux
-RUN sudo apt-get install -y tmux
+# install ansible
+RUN python3 -m pip install --user ansible
 
 ## Tmux plugin manager
 RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
@@ -83,23 +82,6 @@ ENV TERM=screen-256color
 
 # cht.sh
 RUN curl https://cht.sh/:cht.sh | sudo tee /usr/local/bin/cht.sh && sudo chmod +x /usr/local/bin/cht.sh
-
-# fasd repo cause its FASD
-RUN sudo add-apt-repository ppa:aacebedo/fasd
-
-# Get up to speed
-RUN sudo apt-get update
-
-## ranger, fasd, ripgrep...
-RUN sudo apt-get install -y ranger screen fasd tldr fzf x11-xserver-utils \
-    virtualenv ripgrep xclip net-tools fping dnsutils nmap direnv fd-find \
-    shellcheck
-
-# install ansible
-RUN python3 -m pip install --user ansible
-
-## Ruby
-RUN sudo apt-get install -y ruby-dev
 
 ## Switch back to our normal directory
 WORKDIR /home/$DOCKER_USER
@@ -115,19 +97,6 @@ RUN sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/doc
 
 # Make it executable
 RUN sudo chmod +x /usr/local/bin/docker-compose
-
-# Azure, perhaps I should branch of?
-RUN sudo apt-get install -y azure-cli
-
-# Add gpg key and repository for hashicorp
-RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-RUN sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-
-# Install terraform and packer
-RUN sudo apt-get update -y && sudo apt-get install terraform packer
-
-# Install jq for json parsing
-RUN sudo apt-get install -y jq
 
 # get the nvm install script and run it
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh | bash
