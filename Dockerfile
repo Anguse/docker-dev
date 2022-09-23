@@ -57,7 +57,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 
 # install yq
 RUN wget https://github.com/mikefarah/yq/releases/download/v4.27.5/yq_linux_amd64.tar.gz -O - |\
-  tar xz && sudo mv yq_linux_amd64 /usr/bin/yq
+  tar xzf -C /home/$DOCKER_USER/yq && sudo mv /home/$DOCKER_USER/yq/yq_linux_amd64 /usr/bin/yq && rm -rf /home/$DOCKER_USER/yq
 
 # install helm
 RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && bash get_helm.sh && rm get_helm.sh
@@ -90,7 +90,7 @@ RUN curl https://cht.sh/:cht.sh | sudo tee /usr/local/bin/cht.sh && sudo chmod +
 WORKDIR /home/$DOCKER_USER
 
 ## Get docker
-RUN curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
+RUN curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh && rm get-docker.sh
 
 # Make docker runnable without sudo
 RUN sudo usermod -aG docker $DOCKER_USER
@@ -137,6 +137,9 @@ RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c "lua require('pa
 
 # Install tmux plugins
 RUN /home/$DOCKER_USER/.tmux/plugins/tpm/scripts/install_plugins.sh
+
+# Cleanup
+RUN rm -f /home/$DOCKER_USER/{apt-packages.txt,apt-repos.txt,gpg-keys.txt}
 
 # THINGS TO ADD:
 # * git config
