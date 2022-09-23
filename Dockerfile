@@ -55,6 +55,9 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -p https://github.com/zsh-users/zsh-autosuggestions \
     -p https://github.com/zsh-users/zsh-completions
 
+# autocompletion for azure cli
+RUN curl https://raw.githubusercontent.com/Azure/azure-cli/dev/az.completion -o /etc/bash_completion.d/az.completion
+
 # install yq
 RUN wget https://github.com/mikefarah/yq/releases/download/v4.27.5/yq_linux_amd64.tar.gz -O - |\
   tar xzf -C /home/$DOCKER_USER/yq && sudo mv /home/$DOCKER_USER/yq/yq_linux_amd64 /usr/bin/yq && rm -rf /home/$DOCKER_USER/yq
