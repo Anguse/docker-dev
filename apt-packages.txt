@@ -37,3 +37,4 @@ packer
 tldr
 shellcheck
 kubectl
+autojump
