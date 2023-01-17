@@ -25,13 +25,11 @@ traceroute
 direnv
 fd-find
 jq
-azure-cli
 build-essential
 cmake
 python3-pip
 ruby-dev
 neovim
-fasd
 terraform
 packer
 tldr

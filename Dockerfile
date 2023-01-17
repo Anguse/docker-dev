@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 RUN apt-get -y update && apt-get -y install sudo
 
@@ -54,6 +54,9 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -p git \
     -p https://github.com/zsh-users/zsh-autosuggestions \
     -p https://github.com/zsh-users/zsh-completions
+
+# install azure-cli
+RUN curl -L https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 # autocompletion for azure cli
 RUN curl https://raw.githubusercontent.com/Azure/azure-cli/dev/az.completion -o az.completion && sudo mv az.completion /etc/bash_completion.d/az.completion
