@@ -1,4 +1,4 @@
 deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main
-deb [arch=amd64] https://apt.releases.hashicorp.com focal main
+deb [arch=amd64] https://apt.releases.hashicorp.com jammy main
 ppa:neovim-ppa/unstable
 ppa:aacebedo/fasd
