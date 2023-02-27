@@ -144,6 +144,11 @@ RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c "lua require('pa
 # Install tmux plugins
 RUN /home/$DOCKER_USER/.tmux/plugins/tpm/scripts/install_plugins.sh
 
+# Install glab - a CLI tool for GitLab
+RUN curl -L "https://gitlab.com/gitlab-org/cli/-/releases/v1.25.3/downloads/glab_1.25.3_Linux_x86_64.deb" -o /tmp/glab_1.25.3_Linux_x86_64.deb && \
+    sudo apt-get -y install /tmp/glab_1.25.3_Linux_x86_64.deb && \
+    sudo rm /tmp/glab_1.25.3_Linux_x86_64.deb
+
 # Cleanup
 RUN rm -f /home/$DOCKER_USER/{apt-packages.txt,apt-repos.txt,gpg-keys.txt}
 
